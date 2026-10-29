@@ -8,8 +8,8 @@ Numéro,Élève,Horaire,Note
 7,OUNANI Raida,12h00,15
 8,LONCIN Romain,12h10,15
 9,MAIRE Benjamin,12h20,18
-10,DIALLO Algassimou Pellel,12h30
-11,JEGOU Damien,12h40
+10,DIALLO Algassimou Pellel,12h30, 18
+11,JEGOU Damien,12h40 16
 —,PAUSE DÉJEUNER,12h45 – 14h00
 12,ANDRIAMIALISOA Onitiana Johanne,14h00
 13,CHARPENTIER Alexandre,14h10
@@ -24,4 +24,4 @@ Numéro,Élève,Horaire,Note
 —,PAUSE,15h45 – 16h00
 22,SAHLI Rachid,16h00
 23,MOHAMMAD Yasir,16h10
-24,MERIENNES Swann,16h20
+24,MERIENNES Swann,16h20,20
