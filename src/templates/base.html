@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Expense Tracker{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <!-- Top Header & Navigation Bar -->
+    <header class="app-header">
+        <div class="header-container">
+            <a href="{{ url_for('index') }}" class="brand">
+                <!-- Wallet icon with red card peeking out -->
+                <svg class="brand-icon" width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                    <path d="M7 9.5L19.5 5.5C20.6 5.15 21.75 5.8 22.1 6.9L22.8 9.5H7Z" fill="#d6001c"/>
+                    <rect x="4" y="9.5" width="23" height="17" rx="3.5" fill="#ffffff" stroke="#111111" stroke-width="2.2"/>
+                    <path d="M21 15.5H27V20.5H21C19.62 20.5 18.5 19.38 18.5 18C18.5 16.62 19.62 15.5 21 15.5Z" fill="#ffffff" stroke="#111111" stroke-width="2"/>
+                    <circle cx="21.5" cy="18" r="1.2" fill="#111111"/>
+                </svg>
+                <span class="brand-title">Expense Tracker</span>
+            </a>
+
+            <div class="header-right">
+                <!-- Language & View Mode Toggles (Required by ENSIIE grading rubric) -->
+                <div class="header-toggles">
+                    <button type="button" id="lang-toggle" class="toggle-pill" aria-label="Change language" data-aria-fr="Changer de langue" data-aria-en="Change language">
+                        EN
+                    </button>
+                    <button type="button" id="view-toggle" class="toggle-pill" aria-label="Toggle mobile or desktop layout"
+                            data-fr="Bureau" data-en="Desktop">
+                        Bureau
+                    </button>
+                </div>
+
+                {% if g.user %}
+                    <button type="button" id="menu-toggle" class="burger-btn" aria-label="Open navigation menu" data-aria-fr="Ouvrir le menu de navigation" data-aria-en="Open navigation menu" aria-expanded="false">
+                        <span class="burger-line"></span>
+                        <span class="burger-line"></span>
+                        <span class="burger-line"></span>
+                    </button>
+                    <nav id="main-nav" class="nav-drawer" aria-label="Main navigation" data-aria-fr="Navigation principale" data-aria-en="Main navigation">
+                        <button type="button" id="menu-close" class="mobile-menu-close" aria-label="Fermer le menu" data-aria-fr="Fermer le menu" data-aria-en="Close menu">×</button>
+                        <ul class="nav-list">
+                            <li>
+                                <a href="{{ url_for('expenses.dashboard') }}" class="nav-link {{ 'is-active' if request.endpoint == 'expenses.dashboard' else '' }}"
+                                   data-fr="Tableau de bord" data-en="Dashboard">Tableau de bord</a>
+                            </li>
+                            <li>
+                                <a href="{{ url_for('expenses.list_expenses') }}" class="nav-link {{ 'is-active' if request.endpoint in ['expenses.list_expenses', 'expenses.edit_expense'] else '' }}"
+                                   data-fr="Mes dépenses" data-en="My expenses">Mes dépenses</a>
+                            </li>
+                            <li>
+                                <a href="{{ url_for('contact') }}" class="nav-link {{ 'is-active' if request.endpoint == 'contact' else '' }}"
+                                   data-fr="Contact" data-en="Contact">Contact</a>
+                            </li>
+                            <li>
+                                <a href="{{ url_for('auth.logout') }}" class="header-auth-link"
+                                   data-fr="Déconnexion" data-en="Log out">Déconnexion</a>
+                            </li>
+                        </ul>
+                    </nav>
+                {% else %}
+                    <a href="{{ url_for('contact') }}" class="nav-link {{ 'is-active' if request.endpoint == 'contact' else '' }}"
+                       data-fr="Contact" data-en="Contact">Contact</a>
+                    {% if request.endpoint == 'auth.login' %}
+                        <a href="{{ url_for('auth.register') }}" class="header-auth-link"
+                           data-fr="S'inscrire" data-en="Sign up">S'inscrire</a>
+                    {% else %}
+                        <a href="{{ url_for('auth.login') }}" class="header-auth-link"
+                           data-fr="Se connecter" data-en="Log in">Se connecter</a>
+                    {% endif %}
+                {% endif %}
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Page Container -->
+    <main class="app-main">
+        <!-- Flash Notifications -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <section class="flash-container" aria-live="polite">
+                    {% for category, message in messages %}
+                        <div class="flash-alert flash-{{ category }}" role="alert">
+                            <span>{{ message }}</span>
+                            <button type="button" class="flash-close" aria-label="Fermer l’alerte" data-aria-fr="Fermer l’alerte" data-aria-en="Close alert">×</button>
+                        </div>
+                    {% endfor %}
+                </section>
+            {% endif %}
+        {% endwith %}
+
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Footer: Credits & Contact (Required on every page) -->
+    <footer class="app-footer">
+        <div class="footer-content">
+            <p>
+                <strong>Expense Tracker</strong> —
+                <span data-fr="Projet ENSIIE FISA Bases du Web (2026-2027) — Algassimou Pellel DIALLO"
+                      data-en="ENSIIE FISA Web Basics Project (2026-2027) — Algassimou Pellel DIALLO">
+                    Projet ENSIIE FISA Bases du Web (2026-2027) — Algassimou Pellel DIALLO
+                </span>
+            </p>
+            <p>
+                <a href="{{ url_for('contact') }}" data-fr="Page Contact & Crédits" data-en="Contact & Credits Page">
+                    Page Contact & Crédits
+                </a>
+            </p>
+        </div>
+    </footer>
+
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
+</html>

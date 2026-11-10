@@ -1,0 +1,110 @@
+{% extends "base.html" %}
+
+{% block title %}Mes dépenses — Expense Tracker{% endblock %}
+
+{% block content %}
+<section class="expenses-page">
+    <div class="page-heading">
+        <div>
+            <p class="eyebrow" data-fr="SUIVI MENSUEL" data-en="MONTHLY OVERVIEW">SUIVI MENSUEL</p>
+            <h1 data-fr="Mes dépenses" data-en="My expenses">Mes dépenses</h1>
+            <p data-fr="Retrouvez et gérez vos dépenses personnelles." data-en="Review and manage your personal expenses.">Retrouvez et gérez vos dépenses personnelles.</p>
+        </div>
+    </div>
+
+    <div class="summary-grid">
+        <article class="summary-card">
+            <span data-fr="Budget mensuel" data-en="Monthly budget">Budget mensuel</span>
+            <strong>{{ '%.2f'|format(budget) }} €</strong>
+        </article>
+        <article class="summary-card">
+            <span data-fr="Dépensé ce mois" data-en="Spent this month">Dépensé ce mois</span>
+            <strong>{{ '%.2f'|format(spent) }} €</strong>
+        </article>
+        <article class="summary-card">
+            <span data-fr="Reste disponible" data-en="Remaining budget">Reste disponible</span>
+            <strong class="{{ 'over-budget' if remaining < 0 else '' }}">{{ '%.2f'|format(remaining) }} €</strong>
+        </article>
+    </div>
+    {% if budget > 0 %}
+    <div class="budget-progress" role="progressbar" aria-valuenow="{{ progress }}" aria-valuemin="0" aria-valuemax="100" aria-label="Budget consommé" data-aria-fr="Budget consommé" data-aria-en="Budget spent">
+        <div class="budget-progress-fill {{ 'over-budget' if spent > budget else '' }}" style="width: {{ progress }}%"></div>
+    </div>
+    {% endif %}
+
+    <section class="panel monthly-history">
+        <div class="list-heading"><div><h2 data-fr="Dépenses par mois" data-en="Monthly spending">Dépenses par mois</h2><p data-fr="Faites glisser le curseur pour consulter les mois précédents." data-en="Move the slider to view previous months.">Faites glisser le curseur pour consulter les mois précédents.</p></div><strong class="history-peak"><span data-fr="Maximum :" data-en="Highest:">Maximum :</span> {{ '%.2f'|format(history_max) }} €</strong></div>
+        {% if history_max > 0 %}
+        <div class="histogram-range"><span data-histogram-start>{{ history[12]['month'][5:7] }}/{{ history[12]['month'][:4] }}</span><input type="range" min="0" max="12" value="12" step="1" data-histogram-slider aria-label="Période affichée" data-aria-fr="Période affichée" data-aria-en="Displayed period"><span data-histogram-end>{{ history[21]['month'][5:7] }}/{{ history[21]['month'][:4] }}</span></div>
+        <div class="monthly-histogram" data-histogram-columns role="img" aria-label="Histogramme des dépenses par mois" data-aria-fr="Histogramme des dépenses par mois" data-aria-en="Monthly spending histogram">
+            {% for item in history %}
+            <div class="histogram-column" title="{{ item['month'] }} : {{ '%.2f'|format(item['total']) }} €">
+                <span class="histogram-value">{{ '%.0f'|format(item['total']) }} €</span>
+                <div class="histogram-bar-wrap"><div class="histogram-bar" style="height: {{ [8, (item['total'] / history_max * 100)|round]|max }}%"></div></div>
+                <span class="histogram-label">{{ item['month'][5:7] }}/{{ item['month'][:4] }}</span>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}<p class="empty-state" data-fr="Ajoutez des dépenses pour afficher l'historique mensuel." data-en="Add expenses to display monthly history.">Ajoutez des dépenses pour afficher l'historique mensuel.</p>{% endif %}
+    </section>
+
+    <div class="expenses-layout">
+        <section id="expense-form" class="panel expense-form-panel">
+            <h2 data-fr="{{ 'Modifier la dépense' if edit_expense else 'Ajouter une dépense' }}" data-en="{{ 'Edit expense' if edit_expense else 'Add an expense' }}">{{ 'Modifier la dépense' if edit_expense else 'Ajouter une dépense' }}</h2>
+            <form method="post" action="{{ url_for('expenses.edit_expense', expense_id=edit_expense['id']) if edit_expense else url_for('expenses.add_expense') }}" class="expense-form">
+                <label for="description" data-fr="Description" data-en="Description">Description</label>
+                <input id="description" name="description" maxlength="150" required value="{{ edit_expense['description'] if edit_expense else '' }}" placeholder="Ex. Courses">
+                <label for="amount" data-fr="Montant (€)" data-en="Amount (€)">Montant (€)</label>
+                <input id="amount" name="amount" type="number" min="0.01" step="0.01" inputmode="decimal" required value="{{ edit_expense['amount'] if edit_expense else '' }}" placeholder="0,00">
+                <label for="expense_date" data-fr="Date" data-en="Date">Date</label>
+                <input id="expense_date" name="expense_date" type="date" required value="{{ edit_expense['expense_date'] if edit_expense else today }}">
+                <label for="category_id" data-fr="Catégorie" data-en="Category">Catégorie</label>
+                <select id="category_id" name="category_id" required>
+                    <option value="" data-fr="Choisir une catégorie" data-en="Choose a category">Choisir une catégorie</option>
+                    {% for category in categories %}
+                    <option value="{{ category['id'] }}" data-category-fr="{{ category['name'] }}" data-category-en="{{ category['name_en'] }}" {% if edit_expense and edit_expense['category_id'] == category['id'] %}selected{% endif %}>{{ category['name'] }}</option>
+                    {% endfor %}
+                </select>
+                <div class="form-actions">
+                    <button class="btn-submit" type="submit" data-fr="{{ 'Enregistrer les modifications' if edit_expense else 'Ajouter la dépense' }}" data-en="{{ 'Save changes' if edit_expense else 'Add expense' }}">{{ 'Enregistrer les modifications' if edit_expense else 'Ajouter la dépense' }}</button>
+                    {% if edit_expense %}<a class="secondary-button" href="{{ url_for('expenses.list_expenses') }}" data-fr="Annuler" data-en="Cancel">Annuler</a>{% endif %}
+                </div>
+            </form>
+        </section>
+
+        <section class="panel expense-list-panel">
+            <div class="list-heading"><div><h2 data-fr="Historique" data-en="History">Historique</h2><p><span data-filter-count>{{ expenses|length }}</span> <span data-fr="dépense(s)" data-en="expense(s)">dépense(s)</span></p></div></div>
+            <form class="filter-form" data-dynamic-filters>
+                <label class="visually-hidden" for="search" data-fr="Rechercher" data-en="Search">Rechercher</label>
+                <input id="search" type="search" name="q" value="{{ filters.q }}" placeholder="Rechercher une dépense" data-placeholder-fr="Rechercher une dépense" data-placeholder-en="Search expenses">
+                <select name="category" data-filter-category aria-label="Catégorie" data-aria-fr="Catégorie" data-aria-en="Category">
+                    <option value="" data-fr="Toutes les catégories" data-en="All categories">Toutes les catégories</option>
+                    {% for category in categories %}<option value="{{ category['id'] }}" data-category-fr="{{ category['name'] }}" data-category-en="{{ category['name_en'] }}" {% if filters.category == category['id'] %}selected{% endif %}>{{ category['name'] }}</option>{% endfor %}
+                </select>
+                <div class="filter-field"><label for="filter-month" data-fr="Mois (MM/AAAA)" data-en="Month (MM/YYYY)">Mois (MM/AAAA)</label><input id="filter-month" type="text" name="month" data-filter-month value="{{ filters.month[5:7] ~ '/' ~ filters.month[:4] if filters.month else '' }}" placeholder="MM/AAAA" inputmode="numeric" maxlength="7" aria-label="Mois au format MM/AAAA" data-aria-fr="Mois au format MM/AAAA" data-aria-en="Month in MM/YYYY format"></div>
+                <button type="button" class="secondary-button" data-clear-filters data-fr="Tout voir" data-en="Clear">Tout voir</button>
+            </form>
+
+            {% if expenses %}
+            <div class="expense-list">
+                {% for expense in expenses %}
+                <article class="expense-row" data-expense-row data-category-id="{{ expense['category_id'] }}" data-expense-date="{{ expense['expense_date'] }}">
+                    <div class="expense-description"><strong>{{ expense['description'] }}</strong><span data-category-fr="{{ expense['category_name'] }}" data-category-en="{{ expense['category_name_en'] }}">{{ expense['category_name'] }}</span><time datetime="{{ expense['expense_date'] }}">{{ expense['expense_date'] }}</time></div>
+                    <strong class="expense-amount">{{ '%.2f'|format(expense['amount']) }} €</strong>
+                    <div class="expense-actions"><a href="{{ url_for('expenses.edit_expense', expense_id=expense['id']) }}" data-fr="Modifier" data-en="Edit">Modifier</a><form method="post" action="{{ url_for('expenses.remove_expense', expense_id=expense['id']) }}" class="delete-expense-form"><button type="submit" data-fr="Supprimer" data-en="Delete">Supprimer</button></form></div>
+                </article>
+                {% endfor %}
+            </div>
+            <nav class="pagination" data-pagination aria-label="Pagination des dépenses" data-aria-fr="Pagination des dépenses" data-aria-en="Expense pagination">
+                <button type="button" class="secondary-button" data-page-previous data-fr="Précédent" data-en="Previous">Précédent</button>
+                <span data-page-status>Page 1</span>
+                <button type="button" class="secondary-button" data-page-next data-fr="Suivant" data-en="Next">Suivant</button>
+            </nav>
+            <div class="empty-state" data-filter-empty hidden><strong data-fr="Aucune dépense trouvée" data-en="No expenses found">Aucune dépense trouvée</strong><p data-fr="Modifiez votre recherche ou vos filtres." data-en="Change your search or filters.">Modifiez votre recherche ou vos filtres.</p></div>
+            {% else %}
+            <div class="empty-state"><strong data-fr="Aucune dépense trouvée" data-en="No expenses found">Aucune dépense trouvée</strong><p data-fr="Ajoutez votre première dépense ou modifiez vos filtres." data-en="Add your first expense or adjust your filters.">Ajoutez votre première dépense ou modifiez vos filtres.</p></div>
+            {% endif %}
+        </section>
+    </div>
+</section>
+{% endblock %}

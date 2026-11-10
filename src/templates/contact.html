@@ -1,0 +1,162 @@
+{% extends "base.html" %}
+
+{% block title %}Contact & Crédits — Expense Tracker{% endblock %}
+
+{% block content %}
+<section class="auth-section">
+    <div class="auth-card contact-card">
+        <h1 class="auth-title" data-fr="Contact & Crédits" data-en="Contact & Credits">
+            Contact & Crédits
+        </h1>
+
+        <!-- Author & Project Information Box -->
+        <div class="contact-info-box">
+            <div class="contact-info-item">
+                <span class="contact-badge" aria-hidden="true">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="12" cy="7" r="4"></circle>
+                    </svg>
+                </span>
+                <div>
+                    <strong data-fr="Auteur :" data-en="Author:">Auteur :</strong>
+                    <span>Algassimou Pellel DIALLO</span>
+                </div>
+            </div>
+
+            <div class="contact-info-item">
+                <span class="contact-badge" aria-hidden="true">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M22 10v6M2 10l10-5 10 5-10 5z"></path>
+                        <path d="M6 12v5c3 3 9 3 12 0v-5"></path>
+                    </svg>
+                </span>
+                <div>
+                    <strong data-fr="Formation :" data-en="Program:">Formation :</strong>
+                    <span data-fr="ENSIIE — FISA Bases du Web (2026-2027)" data-en="ENSIIE — FISA Web Basics (2026-2027)">
+                        ENSIIE — FISA Bases du Web (2026-2027)
+                    </span>
+                </div>
+            </div>
+
+            <div class="contact-info-item">
+                <span class="contact-badge" aria-hidden="true">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="2" y="4" width="20" height="16" rx="2"></rect>
+                        <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"></path>
+                    </svg>
+                </span>
+                <div>
+                    <strong data-fr="Email direct :" data-en="Direct email:">Email direct :</strong>
+                    <a href="mailto:algassimoupellel.diallo@ensiie.eu" class="auth-switch-link">algassimoupellel.diallo@ensiie.eu</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Contact Form -->
+        <form method="post" action="{{ url_for('contact') }}" class="auth-form" novalidate>
+            <!-- Sender Name -->
+            <div class="form-group">
+                <label for="contact_name" class="form-label"
+                       data-fr="Votre nom" data-en="Your name">
+                    Votre nom
+                </label>
+                <div class="input-wrapper">
+                    <span class="input-icon" aria-hidden="true">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                            <circle cx="12" cy="7" r="4"></circle>
+                        </svg>
+                    </span>
+                    <input
+                        type="text"
+                        id="contact_name"
+                        name="name"
+                        class="form-input"
+                        placeholder="Ex. Jean Dupont"
+                        data-placeholder-fr="Ex. Jean Dupont"
+                        data-placeholder-en="E.g. John Doe"
+                        value="{{ g.user['nom'] if g.user else '' }}"
+                        required
+                    >
+                </div>
+            </div>
+
+            <!-- Sender Email -->
+            <div class="form-group">
+                <label for="contact_email" class="form-label"
+                       data-fr="Votre email" data-en="Your email">
+                    Votre email
+                </label>
+                <div class="input-wrapper">
+                    <span class="input-icon" aria-hidden="true">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="2" y="4" width="20" height="16" rx="2"></rect>
+                            <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"></path>
+                        </svg>
+                    </span>
+                    <input
+                        type="email"
+                        id="contact_email"
+                        name="email"
+                        class="form-input"
+                        placeholder="Ex. jean@email.com"
+                        data-placeholder-fr="Ex. jean@email.com"
+                        data-placeholder-en="E.g. john@email.com"
+                        value="{{ g.user['email'] if g.user else '' }}"
+                        required
+                    >
+                </div>
+            </div>
+
+            <!-- Subject -->
+            <div class="form-group">
+                <label for="contact_subject" class="form-label"
+                       data-fr="Sujet" data-en="Subject">
+                    Sujet
+                </label>
+                <div class="input-wrapper">
+                    <span class="input-icon" aria-hidden="true">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                        </svg>
+                    </span>
+                    <input
+                        type="text"
+                        id="contact_subject"
+                        name="subject"
+                        class="form-input"
+                        placeholder="Ex. Question sur l'application"
+                        data-placeholder-fr="Ex. Question sur l'application"
+                        data-placeholder-en="E.g. Question about the app"
+                        required
+                    >
+                </div>
+            </div>
+
+            <!-- Message -->
+            <div class="form-group">
+                <label for="contact_message" class="form-label"
+                       data-fr="Message" data-en="Message">
+                    Message
+                </label>
+                <textarea
+                    id="contact_message"
+                    name="message"
+                    class="form-textarea"
+                    rows="4"
+                    placeholder="Écrivez votre message ici..."
+                    data-placeholder-fr="Écrivez votre message ici..."
+                    data-placeholder-en="Write your message here..."
+                    required
+                ></textarea>
+            </div>
+
+            <button type="submit" class="btn-submit"
+                    data-fr="Envoyer le message" data-en="Send message">
+                Envoyer le message
+            </button>
+        </form>
+    </div>
+</section>
+{% endblock %}

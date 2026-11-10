@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block title %}Tableau de bord — Expense Tracker{% endblock %}
+{% block content %}
+<section class="expenses-page dashboard-page">
+    <div class="page-heading">
+        <div><p class="eyebrow" data-fr="VOTRE APERÇU" data-en="YOUR OVERVIEW">VOTRE APERÇU</p><h1 data-fr="Tableau de bord" data-en="Dashboard">Tableau de bord</h1><p data-fr="Votre budget et vos dépenses du mois." data-en="Your monthly budget and spending.">Votre budget et vos dépenses du mois.</p></div>
+        <div class="dashboard-actions"><a class="primary-button" href="{{ url_for('expenses.list_expenses') }}#expense-form" data-fr="Ajouter une dépense" data-en="Add an expense">Ajouter une dépense</a><form method="get" class="month-picker"><label for="dashboard-month" data-fr="Mois" data-en="Month">Mois</label><input id="dashboard-month" type="month" name="month" value="{{ month }}"><button class="secondary-button" type="submit" data-fr="Afficher" data-en="Show">Afficher</button></form></div>
+    </div>
+    <div class="summary-grid">
+        <article class="summary-card"><span data-fr="Budget mensuel" data-en="Monthly budget">Budget mensuel</span><strong>{{ '%.2f'|format(budget) }} €</strong></article>
+        <article class="summary-card"><span data-fr="Dépensé ce mois" data-en="Spent this month">Dépensé ce mois</span><strong>{{ '%.2f'|format(spent) }} €</strong></article>
+        <article class="summary-card"><span data-fr="Reste disponible" data-en="Remaining budget">Reste disponible</span><strong class="{{ 'over-budget' if remaining < 0 else '' }}">{{ '%.2f'|format(remaining) }} €</strong></article>
+    </div>
+    {% if budget > 0 %}<div class="budget-progress" role="progressbar" aria-valuenow="{{ progress }}" aria-valuemin="0" aria-valuemax="100"><div class="budget-progress-fill {{ 'over-budget' if spent > budget else '' }}" style="width: {{ progress }}%"></div></div>{% endif %}
+    {% if spent > budget and budget > 0 %}<p class="budget-alert" data-fr="Vous avez dépassé votre budget mensuel." data-en="You have exceeded your monthly budget.">Vous avez dépassé votre budget mensuel.</p>{% endif %}
+    <div class="expenses-layout dashboard-layout">
+        <section class="panel"><h2 data-fr="Répartition par catégorie" data-en="Spending by category">Répartition par catégorie</h2>
+            {% if spent > 0 %}<div class="category-chart" role="img" aria-label="Répartition des dépenses par catégorie" data-aria-fr="Répartition des dépenses par catégorie" data-aria-en="Spending breakdown by category">
+                {% for item in category_totals if item['total'] > 0 %}<div class="category-bar-row"><div class="category-label"><span data-category-fr="{{ item['name'] }}" data-category-en="{{ item['name_en'] }}">{{ item['name'] }}</span><strong>{{ '%.2f'|format(item['total']) }} €</strong></div><div class="category-track"><div class="category-fill" style="width: {{ [100, (item['total'] / spent * 100)|round]|min }}%"></div></div></div>{% endfor %}
+            </div>{% else %}<p class="empty-state" data-fr="Ajoutez des dépenses pour voir leur répartition." data-en="Add expenses to see your spending breakdown.">Ajoutez des dépenses pour voir leur répartition.</p>{% endif %}
+        </section>
+        <section class="panel"><div class="list-heading"><h2 data-fr="Dépenses récentes" data-en="Recent expenses">Dépenses récentes</h2><a href="{{ url_for('expenses.list_expenses') }}" data-fr="Tout afficher" data-en="View all">Tout afficher</a></div>
+            {% if recent %}<div class="expense-list">{% for item in recent %}<article class="expense-row"><div class="expense-description"><strong>{{ item['description'] }}</strong><span data-category-fr="{{ item['category_name'] }}" data-category-en="{{ item['category_name_en'] }}">{{ item['category_name'] }}</span><time>{{ item['expense_date'] }}</time></div><strong class="expense-amount">{{ '%.2f'|format(item['amount']) }} €</strong></article>{% endfor %}</div>{% else %}<p class="empty-state" data-fr="Aucune dépense ce mois-ci." data-en="No expenses this month.">Aucune dépense ce mois-ci.</p>{% endif %}
+        </section>
+    </div>
+    <section class="panel budget-settings"><div><h2 data-fr="Votre budget mensuel" data-en="Your monthly budget">Votre budget mensuel</h2><p data-fr="Définissez la limite que vous souhaitez suivre." data-en="Set the spending limit you want to track.">Définissez la limite que vous souhaitez suivre.</p></div><form method="post" action="{{ url_for('expenses.update_budget') }}"><label class="visually-hidden" for="monthly_budget" data-fr="Budget mensuel en euros" data-en="Monthly budget in euros">Budget mensuel en euros</label><input id="monthly_budget" name="monthly_budget" type="number" min="0" step="0.01" value="{{ '%.2f'|format(budget) }}" required><button class="secondary-button" type="submit" data-fr="Enregistrer" data-en="Save">Enregistrer</button></form></section>
+</section>
+{% endblock %}

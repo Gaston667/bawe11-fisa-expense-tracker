@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+{% block title %}Page introuvable — Expense Tracker{% endblock %}
+
+{% block content %}
+<section class="auth-section">
+    <div class="auth-card error-page-card">
+        <p class="error-code">404</p>
+        <h1 class="auth-title" data-fr="Page introuvable" data-en="Page not found">Page introuvable</h1>
+        <p class="error-page-text" data-fr="Cette page n'existe pas ou a été déplacée." data-en="This page does not exist or has been moved.">Cette page n'existe pas ou a été déplacée.</p>
+        <a class="btn-submit error-page-link" href="{{ url_for('expenses.dashboard') if g.user else url_for('auth.login') }}" data-fr="Revenir à l'application" data-en="Back to the app">Revenir à l'application</a>
+    </div>
+</section>
+{% endblock %}
