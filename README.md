@@ -19,11 +19,11 @@ sudo apt install -y python3 python3-venv python3-pip
 ### 2. Extraire l'archive et entrer dans le projet
 
 ```bash
-tar -xzf "DIALLO Algassimou Pellel flask.tar.gz"
+tar -xzf diallo_algassimou_pellel_flask.tar.gz
 ```
 
 ```bash
-cd "DIALLO Algassimou Pellel flask"
+cd diallo_algassimou_pellel_flask
 ```
 
 ### 3. Installer Flask
@@ -48,7 +48,7 @@ python src/app.py
 
 Ouvrir ensuite `http://127.0.0.1:5000`.
 
-Au premier démarrage, la base SQLite, ses trois tables et les catégories initiales sont créées automatiquement.
+Au premier démarrage, la base SQLite (`instance/expense_tracker.db`), ses trois tables et les catégories initiales sont créées automatiquement à partir du fichier `src/schema.sql`.
 
 ### Données de démonstration, optionnel
 
